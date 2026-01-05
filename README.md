@@ -6,6 +6,10 @@
 
 <br/>
 
+# 🏷️ NFC Feature Fork
+
+> **This fork adds NFC/RFID tag support with OpenSpool format integration for physical spool identification and tracking.**
+
 _Keep track of your inventory of 3D-printer filament spools._
 
 Spoolman is a self-hosted web service designed to help you efficiently manage your 3D printer filament spools and monitor their usage. It acts as a centralized database that seamlessly integrates with popular 3D printing software like [OctoPrint](https://octoprint.org/) and [Klipper](https://www.klipper3d.org/)/[Moonraker](https://moonraker.readthedocs.io/en/latest/). When connected, it automatically updates spool weights as printing progresses, giving you real-time insights into filament usage.
@@ -14,6 +18,8 @@ Spoolman is a self-hosted web service designed to help you efficiently manage yo
 [![GitHub Release](https://img.shields.io/github/v/release/Donkie/Spoolman)](https://github.com/Donkie/Spoolman/releases)
 
 ### Features
+* **🏷️ NFC Tag Support**: Write OpenSpool-format NFC tags directly from the web interface using the Web NFC API (Chrome on Android) or NFC Tools app. Tags include spool information and work with OpenSpool readers and Snapmaker U1.
+* **🔌 Klipper Multi-Tool Integration**: Automatic spool assignment for multi-tool printers when NFC tags are scanned. Includes macros for Snapmaker U1 and other Klipper systems.
 * **Filament Management**: Keep comprehensive records of filament types, manufacturers, and individual spools.
 * **API Integration**: The [REST API](https://donkie.github.io/Spoolman/) allows easy integration with other software, facilitating automated workflows and data exchange.
 * **Real-Time Updates**: Stay informed with live spool updates through Websockets, providing immediate feedback during printing operations.
@@ -35,6 +41,55 @@ Spoolman is a self-hosted web service designed to help you efficiently manage yo
 
 **Web client preview:**
 ![image](https://github.com/Donkie/Spoolman/assets/2332094/33928d5e-440f-4445-aca9-456c4370ad0d)
+
+## 🏷️ NFC Tag Features
+
+This fork adds comprehensive NFC tag support for physical spool tracking and identification.
+
+### What's New
+- **OpenSpool Format**: Write NFC tags in the official [OpenSpool format](OPENSPOOL_FORMAT.md), compatible with OpenSpool readers and Snapmaker U1
+- **Web NFC Writer**: Write tags directly from your phone's browser (Chrome on Android with HTTPS)
+- **NFC Tag ID Field**: Store and track NFC tag UIDs in the `nfc_id` extra field
+- **Klipper Integration**: Automatic spool assignment for multi-tool printers when tags are scanned
+
+### Usage
+1. **Write Tags**: 
+   - Navigate to any spool's detail page
+   - Click "Write to NFC Tag"
+   - Hold your NFC tag near your device
+   - Tag is written with OpenSpool JSON including spool_id, material, temperatures, and color
+
+2. **Klipper Integration** (Snapmaker U1 / Multi-Tool):
+   - Copy `klipper/spoolman_nfc_integration.cfg` to your Klipper config
+   - Include it: `[include spoolman_nfc_integration.cfg]`
+   - Scan tags to automatically assign spools to tools
+   - See [NFC_FEATURE.md](NFC_FEATURE.md) for full documentation
+
+### OpenSpool Format
+Tags written by Spoolman include:
+```json
+{
+  "protocol": "openspool",
+  "version": "1.0",
+  "spool_id": 3,
+  "type": "PETG",
+  "color_hex": "FF0000",
+  "brand": "Sunlu",
+  "min_temp": "220",
+  "max_temp": "250",
+  "bed_min_temp": "70",
+  "bed_max_temp": "85"
+}
+```
+
+### Requirements
+- **For Web NFC**: Chrome on Android, HTTPS connection
+- **For Klipper**: Compatible NFC reader (Snapmaker U1 built-in or ESP32 + PN532)
+- **Fallback**: Manual writing via NFC Tools app (instructions provided in UI)
+
+See [NFC_FEATURE.md](NFC_FEATURE.md) and [OPENSPOOL_FORMAT.md](OPENSPOOL_FORMAT.md) for complete documentation.
+
+---
 
 ## Installation
 Please see the [Installation page on the Wiki](https://github.com/Donkie/Spoolman/wiki/Installation) for details how to install Spoolman.

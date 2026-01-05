@@ -16,6 +16,7 @@ interface NFCData {
 interface OpenSpoolData {
   protocol: string;
   version: string;
+  spool_id: number;
   type: string;
   color_hex: string;
   brand: string;
@@ -147,6 +148,7 @@ export const writeNFCTag = async (spool: ISpool): Promise<string> => {
     const openSpoolData: OpenSpoolData = {
       protocol: "openspool",
       version: "1.0",
+      spool_id: spool.id,
       type: material,
       color_hex: (spool.filament.color_hex || "FFFFFF").replace("#", "").toUpperCase(),
       brand: spool.filament.vendor?.name || "Unknown",
@@ -175,12 +177,21 @@ export const writeNFCTag = async (spool: ISpool): Promise<string> => {
     const openSpoolJson = JSON.stringify(openSpoolData);
     
     // Write to the tag using application/json MIME type (OpenSpool standard format)
+    // Additional records (text/url) won't interfere with OpenSpool readers
     await ndef.write({
       records: [
         {
           recordType: "mime",
           mediaType: "application/json",
           data: textEncoder.encode(openSpoolJson),
+        },
+        {
+          recordType: "text",
+          data: textEncoder.encode(`Spoolman Spool ID: ${spool.id}`),
+        },
+        {
+          recordType: "url",
+          data: `${window.location.origin}/spool/${spool.id}`,
         },
       ]
     });
