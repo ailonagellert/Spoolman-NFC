@@ -55,8 +55,8 @@ This fork adds comprehensive NFC tag support for physical spool tracking and ide
 **NFC Writer Interface:**
 
 <p align="center">
-  <img src="images/nfc-write-button.png" alt="Write to NFC Tag button on spool detail page" width="45%">
-  <img src="images/nfc-write-dialog.png" alt="NFC write confirmation dialog" width="45%">
+  <img src="images/Screenshot_20260103-183733.png" alt="Write to NFC Tag button on spool detail page" width="45%">
+  <img src="images\Screenshot_20260103-185545.png" alt="NFC write confirmation dialog" width="45%">
 </p>
 
 ### Usage
