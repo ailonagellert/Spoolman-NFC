@@ -160,6 +160,7 @@ Spool Weight: {filament.spool_weight} g
 {ET: {filament.settings_extruder_temp} °C}
 {BT: {filament.settings_bed_temp} °C}
 {Lot Nr: {lot_nr}}
+{NFC: {extra.nfc_id}}
 {{comment}}
 {filament.comment}
 {filament.vendor.comment}`;

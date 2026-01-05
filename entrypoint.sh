@@ -8,6 +8,12 @@ SPOOLMAN_HOST=${SPOOLMAN_HOST:-0.0.0.0}
 groupmod -o -g "$PGID" app
 usermod -o -u "$PUID" app
 
+# Fix ownership of application files if UID/GID changed
+if [ "$PUID" != "1000" ] || [ "$PGID" != "1000" ]; then
+    echo "Fixing file ownership for UID:$PUID GID:$PGID..."
+    chown -R app:app /home/app/spoolman
+fi
+
 echo User UID: $(id -u app)
 echo User GID: $(id -g app)
 

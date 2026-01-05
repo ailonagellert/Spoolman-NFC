@@ -346,6 +346,21 @@ async def get(
     return Spool.from_db(db_item)
 
 
+@router.get(
+    "/find-by-nfc/{nfc_id}",
+    name="Find spool by NFC ID",
+    description="Get a spool by its NFC tag ID stored in the nfc_id extra field.",
+    response_model_exclude_none=True,
+    responses={404: {"model": Message}},
+)
+async def get_by_nfc(
+    db: Annotated[AsyncSession, Depends(get_db_session)],
+    nfc_id: str,
+) -> Spool:
+    db_item = await spool.get_by_extra_field(db, "nfc_id", nfc_id)
+    return Spool.from_db(db_item)
+
+
 @router.websocket(
     "/{spool_id}",
     name="Listen to spool changes",

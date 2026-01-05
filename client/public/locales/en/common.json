@@ -147,6 +147,21 @@
             "unknown": "An unknown error occurred. ({{error}})"
         }
     },
+    "nfc": {
+        "button": "Write to NFC Tag",
+        "write": {
+            "title": "Write NFC Tag",
+            "message": "Hold your NFC tag near your device to write spool data to it. The tag will contain the spool ID, material, color, vendor, and weight information.",
+            "ok": "Write Tag",
+            "progress": "Writing to NFC tag...",
+            "success": "Successfully wrote data to NFC tag!",
+            "error": "Failed to write to NFC tag. Please try again."
+        },
+        "unsupported": {
+            "title": "NFC Not Supported",
+            "message": "Your browser does not support the Web NFC API. To write NFC tags, you can use a mobile app:"
+        }
+    },
     "spool": {
         "spool": "Spools",
         "fields": {

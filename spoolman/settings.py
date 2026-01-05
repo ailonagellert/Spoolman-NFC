@@ -67,7 +67,23 @@ register_setting("print_presets", SettingType.ARRAY, json.dumps([]))
 
 register_setting("extra_fields_vendor", SettingType.ARRAY, json.dumps([]))
 register_setting("extra_fields_filament", SettingType.ARRAY, json.dumps([]))
-register_setting("extra_fields_spool", SettingType.ARRAY, json.dumps([]))
+register_setting(
+    "extra_fields_spool",
+    SettingType.ARRAY,
+    json.dumps([
+        {
+            "key": "nfc_id",
+            "entity_type": "spool",
+            "name": "NFC Tag ID",
+            "order": 0,
+            "unit": None,
+            "field_type": "text",
+            "default_value": None,
+            "choices": None,
+            "multi_choice": None,
+        }
+    ]),
+)
 register_setting("base_url", SettingType.STRING, json.dumps(""))
 
 register_setting("locations", SettingType.ARRAY, json.dumps([]))

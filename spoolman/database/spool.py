@@ -475,3 +475,20 @@ async def rename_location(
     await db.execute(
         sqlalchemy.update(models.Spool).where(models.Spool.location == current_name).values(location=new_name),
     )
+
+
+async def get_by_extra_field(db: AsyncSession, field_key: str, field_value: str) -> models.Spool:
+    """Get a spool object from the database by an extra field value."""
+    result = await db.execute(
+        sqlalchemy.select(models.Spool)
+        .join(models.SpoolField, models.Spool.id == models.SpoolField.spool_id)
+        .where(models.SpoolField.key == field_key)
+        .where(models.SpoolField.value == f'"{field_value}"')  # JSON string value
+        .options(joinedload("*"))
+        .limit(1)
+    )
+    spool = result.unique().scalar_one_or_none()
+    if spool is None:
+        raise ItemNotFoundError(f"No spool with {field_key}={field_value} found.")
+    return spool
+

@@ -1,5 +1,5 @@
 import { getBasePath } from "../../utils/url";
-import { InboxOutlined, PrinterOutlined, ToTopOutlined, ToolOutlined } from "@ant-design/icons";
+import { InboxOutlined, PrinterOutlined, TagOutlined, ToTopOutlined, ToolOutlined } from "@ant-design/icons";
 import { DateField, NumberField, Show, TextField } from "@refinedev/antd";
 import { IResourceComponentsProps, useInvalidate, useShow, useTranslate } from "@refinedev/core";
 import { Button, Modal, Typography } from "antd";
@@ -7,6 +7,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import React from "react";
 import { ExtraFieldDisplay } from "../../components/extraFields";
+import { showNFCWriteModal } from "../../components/nfcWriter";
 import { NumberFieldUnit } from "../../components/numberField";
 import SpoolIcon from "../../components/spoolIcon";
 import { enrichText } from "../../utils/parsing";
@@ -131,6 +132,13 @@ export const SpoolShow: React.FC<IResourceComponentsProps> = () => {
             href={getBasePath() + "/spool/print?spools=" + record?.id + "&return=" + encodeURIComponent(window.location.pathname)}
           >
             {t("printing.qrcode.button")}
+          </Button>
+          <Button
+            type="default"
+            icon={<TagOutlined />}
+            onClick={() => record && showNFCWriteModal(record, t)}
+          >
+            {t("nfc.button", "Write to NFC Tag")}
           </Button>
           {record?.archived ? (
             <Button icon={<ToTopOutlined />} onClick={() => archiveSpool(record, false)}>
