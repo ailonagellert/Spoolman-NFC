@@ -52,6 +52,13 @@ This fork adds comprehensive NFC tag support for physical spool tracking and ide
 - **NFC Tag ID Field**: Store and track NFC tag UIDs in the `nfc_id` extra field
 - **Klipper Integration**: Automatic spool assignment for multi-tool printers when tags are scanned
 
+**NFC Writer Interface:**
+
+<p align="center">
+  <img src="images/nfc-write-button.png" alt="Write to NFC Tag button on spool detail page" width="45%">
+  <img src="images/nfc-write-dialog.png" alt="NFC write confirmation dialog" width="45%">
+</p>
+
 ### Usage
 1. **Write Tags**: 
    - Navigate to any spool's detail page
