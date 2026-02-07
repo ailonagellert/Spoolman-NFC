@@ -5,6 +5,7 @@ import {
     InboxOutlined,
     PlusSquareOutlined,
     PrinterOutlined,
+    TagOutlined,
     ToolOutlined,
     ToTopOutlined,
 } from "@ant-design/icons";
@@ -27,6 +28,7 @@ import {
     SpoolIconColumn,
 } from "../../components/column";
 import { useLiveify } from "../../components/liveify";
+import { checkNFCSupport, showNFCWriteModal, writeNFCTag } from "../../components/nfcWriter";
 import {
     useSpoolmanFilamentFilter,
     useSpoolmanLocations,
@@ -217,6 +219,29 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
         { name: t("buttons.edit"), icon: <EditOutlined />, link: editUrl("spool", record.id) },
         { name: t("buttons.clone"), icon: <PlusSquareOutlined />, link: cloneUrl("spool", record.id) },
         { name: t("spool.titles.adjust"), icon: <ToolOutlined />, onClick: () => openSpoolAdjustModal(record) },
+        { 
+          name: t("nfc.button", "Write NFC Tag"), 
+          icon: <TagOutlined />, 
+          onClick: async () => {
+            const nfcSupport = checkNFCSupport();
+            if (!nfcSupport.supported) {
+              showNFCWriteModal(record, t);
+              return;
+            }
+            try {
+              await writeNFCTag(record);
+              Modal.success({
+                title: t("nfc.success", "NFC Tag Written Successfully"),
+                content: t("nfc.success_message", "The spool data has been written to the NFC tag."),
+              });
+            } catch (error: any) {
+              Modal.error({
+                title: t("nfc.error", "Failed to Write NFC Tag"),
+                content: error.message || "An unknown error occurred",
+              });
+            }
+          }
+        },
       ];
       if (record.archived) {
         actions.push({
