@@ -9,6 +9,7 @@ import { ExtraFieldFormItem, ParsedExtras, StringifiedExtras } from "../../compo
 import { FilamentImportModal } from "../../components/filamentImportModal";
 import { MultiColorPicker } from "../../components/multiColorPicker";
 import { formatNumberOnUserInput, numberParser, numberParserAllowEmpty } from "../../utils/parsing";
+import { COLOR_PRESETS } from "../../utils/colorPresets";
 import { ExternalFilament } from "../../utils/queryExternalDB";
 import { EntityType, useGetFields } from "../../utils/queryFields";
 import { getCurrencySymbol, useCurrency } from "../../utils/settings";
@@ -191,7 +192,7 @@ export const FilamentCreate: React.FC<IResourceComponentsProps & CreateOrClonePr
               return e?.toHex();
             }}
           >
-            <ColorPicker format="hex" />
+            <ColorPicker format="hex" presets={COLOR_PRESETS} />
           </Form.Item>
         )}
         {colorType == "multi" && (

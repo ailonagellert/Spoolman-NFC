@@ -18,12 +18,13 @@ interface OpenSpoolData {
   version: string;
   spool_id: number;
   type: string;
+  subtype: string;
   color_hex: string;
   brand: string;
   min_temp: string;
   max_temp: string;
-  bed_min_temp?: string;
-  bed_max_temp?: string;
+  bed_min_temp: string;
+  bed_max_temp: string;
 }
 
 /**
@@ -75,7 +76,7 @@ export const writeNFCTag = async (spool: ISpool): Promise<string> => {
     // Determine temperature range based on material type and configured extruder temperature
     const extruderTemp = spool.filament.settings_extruder_temp;
     const bedTemp = spool.filament.settings_bed_temp;
-    const material = spool.filament.material?.toUpperCase() || "PLA";
+    const material = (spool.filament.material || "PLA").toUpperCase().trim(); // Trim to remove trailing spaces
     
     let minTemp: number;
     let maxTemp: number;
@@ -144,14 +145,23 @@ export const writeNFCTag = async (spool: ISpool): Promise<string> => {
       }
     }
 
+    // Extract subtype from filament name and trim whitespace
+    const filamentName = spool.filament.name || "Basic";
+    const subtype = filamentName.trim() || "Basic";
+    const brand = spool.filament.vendor?.name || "Generic";
+    
+    // Get color hex (remove # if present)
+    const colorHex = (spool.filament.color_hex || "FFFFFF").replace("#", "").toUpperCase();
+
     // Prepare OpenSpool format data (temperatures as strings per spec)
     const openSpoolData: OpenSpoolData = {
       protocol: "openspool",
       version: "1.0",
       spool_id: spool.id,
       type: material,
-      color_hex: (spool.filament.color_hex || "FFFFFF").replace("#", "").toUpperCase(),
-      brand: spool.filament.vendor?.name || "Unknown",
+      subtype: subtype,
+      color_hex: colorHex,
+      brand: brand,
       min_temp: minTemp.toString(),
       max_temp: maxTemp.toString(),
       bed_min_temp: bedMinTemp.toString(),
@@ -177,7 +187,6 @@ export const writeNFCTag = async (spool: ISpool): Promise<string> => {
     const openSpoolJson = JSON.stringify(openSpoolData);
     
     // Write to the tag using application/json MIME type (OpenSpool standard format)
-    // Additional records (text/url) won't interfere with OpenSpool readers
     await ndef.write({
       records: [
         {
@@ -222,10 +231,13 @@ export const showNFCWriteModal = (spool: ISpool, t: (key: string) => string): vo
   
   // Calculate temperature and prepare OpenSpool data
   const extruderTemp = spool.filament.settings_extruder_temp;
-  const material = spool.filament.material?.toUpperCase() || "PLA";
+  const bedTemp = spool.filament.settings_bed_temp;
+  const material = (spool.filament.material || "PLA").toUpperCase().trim(); // Trim to remove trailing spaces
   
   let minTemp: number;
   let maxTemp: number;
+  let bedMinTemp: number;
+  let bedMaxTemp: number;
   
   if (extruderTemp) {
     minTemp = extruderTemp - 15;
@@ -240,47 +252,47 @@ export const showNFCWriteModal = (spool: ISpool, t: (key: string) => string): vo
       default: minTemp = 190; maxTemp = 230;
     }
   }
+  
+  if (bedTemp) {
+    bedMinTemp = bedTemp - 5;
+    bedMaxTemp = bedTemp + 5;
+  } else {
+    switch (material) {
+      case "PLA": bedMinTemp = 50; bedMaxTemp = 65; break;
+      case "PETG": bedMinTemp = 70; bedMaxTemp = 85; break;
+      case "ABS": bedMinTemp = 90; bedMaxTemp = 110; break;
+      case "TPU": bedMinTemp = 40; bedMaxTemp = 60; break;
+      case "NYLON": bedMinTemp = 70; bedMaxTemp = 90; break;
+      default: bedMinTemp = 50; bedMaxTemp = 65;
+    }
+  }
+
+  const filamentName = spool.filament.name || "Basic";
+  const subtype = filamentName.trim() || "Basic";
+  const brand = spool.filament.vendor?.name || "Generic";
+  const colorHex = (spool.filament.color_hex || "FFFFFF").replace("#", "").toUpperCase();
 
   const openSpoolData = {
     protocol: "openspool",
     version: "1.0",
+    spool_id: spool.id,
     type: material,
-    color_hex: (spool.filament.color_hex || "FFFFFF").replace("#", "").toUpperCase(),
-    brand: spool.filament.vendor?.name || "Unknown",
-    min_temp: minTemp,
-    max_temp: maxTemp,
+    color_hex: colorHex,
+    brand: brand,
+    min_temp: minTemp.toString(),
+    max_temp: maxTemp.toString(),
+    bed_min_temp: bedMinTemp.toString(),
+    bed_max_temp: bedMaxTemp.toString(),
   };
 
   const openSpoolJSON = JSON.stringify(openSpoolData, null, 2);
   
-  // If Web NFC is supported, use the native API
-  if (nfcSupport.supported) {
-    Modal.confirm({
-      title: "Write NFC Tag",
-      content: "Hold your NFC tag near your device to write the spool data.",
-      okText: "Write to Tag",
-      cancelText: "Cancel",
-      onOk: async () => {
-        try {
-          await writeNFCTag(spool);
-          message.success("NFC tag written successfully!");
-        } catch (error: any) {
-          message.error(error.message || "Failed to write NFC tag");
-        }
-      },
-    });
-    return;
-  }
-  
-  // Fallback: Show manual NFC Tools instructions if Web NFC not supported
+  // Always show manual NFC Tools instructions since Web NFC has compatibility issues
   Modal.warning({
     title: "Write NFC Tag with NFC Tools",
     content: (
       <div>
-        <p style={{ marginBottom: 12 }}>
-          {nfcSupport.reason && <><strong>Note:</strong> {nfcSupport.reason}<br/><br/></>}
-          Use the <strong>NFC Tools</strong> app to write this OpenSpool data to your tag:
-        </p>
+        <p style={{ marginBottom: 12 }}>Use the <strong>NFC Tools</strong> app to write this OpenSpool data to your tag:</p>
         
         <h4>Step 1: Install NFC Tools</h4>
         <p>Download from Google Play Store: <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc" target="_blank" rel="noopener noreferrer">NFC Tools</a></p>

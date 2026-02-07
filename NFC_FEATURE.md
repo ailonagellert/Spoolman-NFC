@@ -35,7 +35,8 @@ This document describes the NFC/RFID tag support feature added to Spoolman, allo
   1. **OpenSpool JSON record** (primary): Standard OpenSpool format compatible with OpenSpool readers
      - Protocol: "openspool"
      - Version: "1.0"
-     - Material type, color (hex), brand, min/max temperatures
+     - Material type, subtype, combined name (for Orca Slicer), color (hex), brand, min/max temperatures
+     - **New fields for Orca Slicer**: `subtype` and `name` (combined brand + type + subtype)
   2. **Text record**: Simple spool ID for basic readers
   3. **URL record**: Direct link to spool detail page
   4. **Legacy JSON record**: Complete spool data for backwards compatibility
@@ -79,6 +80,64 @@ This document describes the NFC/RFID tag support feature added to Spoolman, allo
 1. Go to "Print Labels" for a spool
 2. Edit the template to include `{extra.nfc_id}` or `{NFC: {extra.nfc_id}}`
 3. The NFC tag ID will be printed on the label (if set)
+
+### Orca Slicer / Snapmaker Integration
+
+#### Overview
+SpoolMan's NFC tags are fully compatible with Orca Slicer and Snapmaker firmware. The tags include special fields to ensure proper filament name recognition.
+
+#### Filament Name Format
+Orca Slicer expects filaments to be named as: **`"<brand> <type> <subtype>"`**
+
+Examples:
+- `"Generic PLA Basic"`
+- `"Elegoo PETG Rapid"`
+- `"Polymaker PLA Matte Black"`
+
+#### How SpoolMan Handles This
+When writing NFC tags, SpoolMan automatically includes:
+
+1. **`subtype` field**: Extracted from the filament's name field
+   - If filament name is "Matte Black", subtype = "Matte Black"
+   - If filament name is empty, subtype = "Basic"
+   
+2. **`name` field**: Pre-constructed combined name in the correct format
+   - Format: `"{brand} {type} {subtype}"`
+   - Example: `"Elegoo PETG Rapid"`
+
+#### Setting Up Your Filaments
+To ensure proper naming in Orca Slicer:
+
+1. **In SpoolMan**: When creating/editing a filament, set the **Name** field to your desired subtype:
+   - Examples: `"Basic"`, `"Rapid"`, `"Premium"`, `"Matte Black"`, `"Silk Gold"`
+   
+2. **Write the NFC tag**: The combined name will be constructed automatically
+
+3. **In your firmware**: Your OpenSpool reader can use the `name` field directly, or construct it from:
+   ```
+   NAME = brand + " " + type + " " + subtype
+   ```
+
+#### Example Tag Data
+```json
+{
+  "protocol": "openspool",
+  "version": "1.0",
+  "brand": "Elegoo",
+  "type": "PETG",
+  "subtype": "Rapid",
+  "name": "Elegoo PETG Rapid",
+  "color_hex": "FF5733",
+  "min_temp": "225",
+  "max_temp": "255"
+}
+```
+
+#### Firmware Implementation Note
+If you're developing firmware to read these tags (e.g., for Snapmaker):
+- **Recommended**: Use the `name` field directly
+- **Alternative**: Construct it: `const name = ${brand} ${type} ${subtype}`
+- Both approaches work with Orca Slicer's machine filaments
 
 ### For Developers
 

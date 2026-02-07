@@ -15,10 +15,13 @@ According to the official specification, OpenSpool tags contain a JSON record wi
 | `protocol` | string | Always "openspool" | `"openspool"` |
 | `version` | string | Protocol version | `"1.0"` |
 | `type` | string | Material type | `"PLA"`, `"PETG"`, `"ABS"` |
+| `subtype` | string | Filament variant/subtype | `"Basic"`, `"Rapid"`, `"Matte Black"` |
+| `name` | string | Combined filament name | `"Generic PLA Basic"`, `"Elegoo PETG Rapid"` |
 | `color_hex` | string | Color as hex code (no #) | `"FFAABB"` |
 | `brand` | string | Manufacturer/vendor name | `"Polymaker"` |
 | `min_temp` | number | Minimum print temperature (°C) | `190` |
 | `max_temp` | number | Maximum print temperature (°C) | `220` |
+| `spool_id` | number | Spoolman spool ID | `123` |
 
 ## Spoolman Implementation
 
@@ -30,6 +33,22 @@ Spoolman maps its internal data to the OpenSpool format as follows:
 - Source: `spool.filament.material`
 - Transformation: Converted to uppercase
 - Default: `"PLA"` if not specified
+
+#### Filament Subtype (`subtype`)
+- Source: `spool.filament.name`
+- Transformation: Trimmed whitespace
+- Default: `"Basic"` if filament name not specified
+- Examples: `"Matte Black"`, `"Rapid"`, `"Premium"`, `"Silk"`
+
+#### Combined Name (`name`)
+- Constructed from: `<brand> <type> <subtype>`
+- Format: `"{brand} {type} {subtype}"`
+- Examples: 
+  - `"Generic PLA Basic"`
+  - `"Elegoo PETG Rapid"`
+  - `"Polymaker PLA Matte Black"`
+- **Purpose**: Used by Orca Slicer and other slicers to display filament name
+- **Firmware Note**: If your firmware needs to construct this field manually, use this exact format
 
 #### Color (`color_hex`)
 - Source: `spool.filament.color_hex`
@@ -94,13 +113,36 @@ When writing an NFC tag, Spoolman creates an NDEF message with multiple records 
 {
   "protocol": "openspool",
   "version": "1.0",
+  "spool_id": 123,
   "type": "PETG",
+  "subtype": "Rapid",
+  "name": "Elegoo PETG Rapid",
   "color_hex": "FF5733",
-  "brand": "Polymaker",
-  "min_temp": 225,
-  "max_temp": 255
+  "brand": "Elegoo",
+  "min_temp": "225",
+  "max_temp": "255",
+  "bed_min_temp": "70",
+  "bed_max_temp": "85"
 }
 ```
+
+### Orca Slicer Integration
+
+**Orca Slicer Filament Name Format**: Orca Slicer expects filaments to be named in the format `"<brand> <type> <subtype>"`. 
+
+**Example**: `"Generic PLA Basic"` or `"Elegoo PETG Rapid"`
+
+**How SpoolMan Helps**:
+- SpoolMan now includes both `subtype` and `name` fields in the OpenSpool JSON
+- The `name` field is pre-constructed in the correct format for Orca Slicer
+- The `subtype` field can be customized by editing the filament's name in SpoolMan
+
+**For Firmware Developers**:
+If your firmware (e.g., Snapmaker) reads OpenSpool tags, you can:
+1. **Option 1**: Use the `name` field directly (recommended)
+2. **Option 2**: Construct it manually: `name = brand + " " + type + " " + subtype`
+
+Both approaches will give you the correct format for Orca Slicer's machine filaments.
 
 ## Compatible Hardware
 

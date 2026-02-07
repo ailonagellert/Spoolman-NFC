@@ -7,7 +7,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import React from "react";
 import { ExtraFieldDisplay } from "../../components/extraFields";
-import { showNFCWriteModal } from "../../components/nfcWriter";
+import { showNFCWriteModal, writeNFCTag, checkNFCSupport } from "../../components/nfcWriter";
 import { NumberFieldUnit } from "../../components/numberField";
 import SpoolIcon from "../../components/spoolIcon";
 import { enrichText } from "../../utils/parsing";
@@ -136,7 +136,29 @@ export const SpoolShow: React.FC<IResourceComponentsProps> = () => {
           <Button
             type="default"
             icon={<TagOutlined />}
-            onClick={() => record && showNFCWriteModal(record, t)}
+            onClick={async () => {
+              if (!record) return;
+              
+              const nfcSupport = checkNFCSupport();
+              if (!nfcSupport.supported) {
+                // Show manual modal if Web NFC not supported
+                showNFCWriteModal(record, t);
+                return;
+              }
+              
+              try {
+                await writeNFCTag(record);
+                Modal.success({
+                  title: t("nfc.success", "NFC Tag Written Successfully"),
+                  content: t("nfc.success_message", "The spool data has been written to the NFC tag."),
+                });
+              } catch (error: any) {
+                Modal.error({
+                  title: t("nfc.error", "Failed to Write NFC Tag"),
+                  content: error.message || "An unknown error occurred",
+                });
+              }
+            }}
           >
             {t("nfc.button", "Write to NFC Tag")}
           </Button>

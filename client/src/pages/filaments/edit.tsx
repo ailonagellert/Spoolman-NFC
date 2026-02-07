@@ -7,6 +7,7 @@ import React, { useEffect, useState } from "react";
 import { ExtraFieldFormItem, ParsedExtras, StringifiedExtras } from "../../components/extraFields";
 import { MultiColorPicker } from "../../components/multiColorPicker";
 import { formatNumberOnUserInput, numberParser, numberParserAllowEmpty } from "../../utils/parsing";
+import { COLOR_PRESETS } from "../../utils/colorPresets";
 import { EntityType, useGetFields } from "../../utils/queryFields";
 import { getCurrencySymbol, useCurrency } from "../../utils/settings";
 import { IVendor } from "../vendors/model";
@@ -169,7 +170,7 @@ export const FilamentEdit: React.FC<IResourceComponentsProps> = () => {
               return e?.toHex();
             }}
           >
-            <ColorPicker />
+            <ColorPicker presets={COLOR_PRESETS} />
           </Form.Item>
         )}
         {colorType == "multi" && (

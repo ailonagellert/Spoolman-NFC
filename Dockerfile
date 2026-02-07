@@ -68,8 +68,9 @@ COPY --chown=app:app ./client/dist /home/app/spoolman/client/dist
 # Copy built app
 COPY --chown=app:app --from=python-builder /home/app/spoolman /home/app/spoolman
 
-COPY entrypoint.sh /home/app/spoolman/entrypoint.sh
-RUN chmod +x /home/app/spoolman/entrypoint.sh
+# Copy entrypoint script and fix line endings (for Windows-edited files)
+COPY --chown=app:app entrypoint.sh /home/app/spoolman/entrypoint.sh
+RUN sed -i 's/\r$//' /home/app/spoolman/entrypoint.sh && chmod +x /home/app/spoolman/entrypoint.sh
 
 WORKDIR /home/app/spoolman
 
