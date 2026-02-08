@@ -98,5 +98,53 @@ See [NFC_FEATURE.md](NFC_FEATURE.md) and [OPENSPOOL_FORMAT.md](OPENSPOOL_FORMAT.
 
 ---
 
+## 📱 Mobile Optimizations
+
+The web client has been fully optimized for mobile devices with a comprehensive mobile-first approach, delivering a seamless experience across all screen sizes.
+
+### Mobile Features
+
+**Responsive Layout**
+- Fully responsive design that automatically adapts to phones, tablets, and desktops
+- Mobile breakpoints at 576px, 768px, and higher for optimal viewing on all devices
+- Optimized touch targets (44px minimum) for easy mobile interaction
+
+**Infinite Scroll**
+- Efficient data loading on all list pages (spools, filaments, vendors)
+- Automatically loads more items as you scroll, eliminating pagination clicks
+- Reduced padding and margins (down to 4px) to maximize content visibility on narrow screens
+
+**Dynamic Layout Adjustments**
+- Responsive table columns that show/hide based on screen size
+- Compact ID columns (50px) to save horizontal space
+- Hidden footer on mobile for more usable screen real estate
+- Smart form layouts that adapt labelCol and wrapperCol based on viewport
+
+**Touch & Input Optimization**
+- Larger, touch-friendly buttons and controls
+- 36-40px header buttons with clear icons and text labels
+- Reduced modal/card padding to fit more content vertically
+- Mobile-optimized date picker with time selector hidden and proper theming
+
+**Performance & Usability**
+- QR code scanner moved to header menu dropdown (no floating button)
+- Simplified header with space-efficient button layout
+- "Write to NFC Tag" action available in spools list dropdown
+- Auto-hiding show/archive button on mobile to reduce clutter
+- Light/dark theme support with automatic color adaptation
+
+### Technical Implementation
+
+Mobile optimizations are implemented through:
+- Centralized `client/src/utils/mobile.css` with 500+ responsive utility rules
+- Mobile-friendly theme tokens in App.tsx configuration
+- Responsive column definitions across all data tables
+- Infinite scroll state management using React hooks
+- CSS media queries using Ant Design breakpoint standards
+
+All mobile features are built with the existing technology stack (React, TypeScript, Ant Design, Vite) and require no additional dependencies.
+
+---
+
 ## Installation
 Please see the [Installation page on the Wiki](https://github.com/Donkie/Spoolman/wiki/Installation) for details how to install Spoolman.
