@@ -46,6 +46,7 @@ interface BaseColumnProps<Obj extends Entity> {
   title?: string;
   align?: AlignType;
   sorter?: boolean;
+  responsive?: ("xs" | "sm" | "md" | "lg" | "xl" | "xxl")[];
   t: (key: string) => string;
   navigate: (link: string) => void;
   dataSource: Obj[];
@@ -93,6 +94,7 @@ function Column<Obj extends Entity>(
     filterMultiple: props.allowMultipleFilters ?? true,
     width: props.width ?? undefined,
     onCell: props.onCell ?? undefined,
+    responsive: props.responsive ?? undefined,
   };
 
   // Sorting

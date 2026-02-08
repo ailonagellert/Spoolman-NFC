@@ -35,15 +35,15 @@ export const Home: React.FC<IResourceComponentsProps> = () => {
   const hasSpools = !spools.data || spools.data.data.length > 0;
 
   const ResourceStatsCard = (props: { loading: boolean; value: number; resource: string; icon: ReactNode }) => (
-    <Col xs={12} md={6}>
+    <Col xs={24} sm={12} md={6}>
       <Card
         loading={props.loading}
         actions={[
-          <Link to={`/${props.resource}`}>
-            <UnorderedListOutlined />
+          <Link to={`/${props.resource}`} style={{ padding: "8px" }}>
+            <UnorderedListOutlined style={{ fontSize: "20px" }} />
           </Link>,
-          <Link to={`/${props.resource}/create`}>
-            <PlusOutlined />
+          <Link to={`/${props.resource}/create`} style={{ padding: "8px" }}>
+            <PlusOutlined style={{ fontSize: "20px" }} />
           </Link>,
         ]}
       >
@@ -55,7 +55,7 @@ export const Home: React.FC<IResourceComponentsProps> = () => {
   return (
     <Content
       style={{
-        padding: "2em 20px",
+        padding: "16px",
         minHeight: 280,
         maxWidth: 800,
         margin: "0 auto",

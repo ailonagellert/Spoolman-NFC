@@ -274,7 +274,7 @@ const PrintingDialog: React.FC<PrintingDialogProps> = ({
           </div>
         </Col>
         <Col span={10}>
-          <Form labelAlign="left" colon={false} labelWrap={true} labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+          <Form labelAlign="left" colon={false} labelWrap={true} labelCol={{ xs: { span: 24 }, sm: { span: 8 } }} wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }}>
             {extraSettingsStart}
             <Divider />
             <Form.Item label={t("printing.generic.skipItems")}>

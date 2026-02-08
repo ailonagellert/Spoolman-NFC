@@ -4,6 +4,7 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import { ErrorComponent } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
+import "./utils/mobile.css";
 
 import {
   FileOutlined,
@@ -95,6 +96,51 @@ function App() {
             theme={{
               token: {
                 colorPrimary: "#dc7734",
+                fontSize: 16,
+                controlHeight: 40,
+                borderRadius: 8,
+                lineHeight: 1.5,
+                marginXS: 8,
+                marginSM: 12,
+                margin: 16,
+                paddingXS: 8,
+                paddingSM: 12,
+                padding: 16,
+              },
+              components: {
+                Button: {
+                  controlHeight: 44,
+                  controlHeightSM: 36,
+                  controlHeightLG: 48,
+                  paddingBlock: 8,
+                  paddingInline: 16,
+                },
+                Input: {
+                  controlHeight: 44,
+                  paddingBlock: 10,
+                  paddingInline: 12,
+                },
+                Select: {
+                  controlHeight: 44,
+                },
+                InputNumber: {
+                  controlHeight: 44,
+                  paddingBlock: 10,
+                  paddingInline: 12,
+                },
+                Card: {
+                  paddingLG: 16,
+                  padding: 12,
+                  paddingSM: 8,
+                },
+                Modal: {
+                  contentBg: "rgba(255, 255, 255, 0.98)",
+                  headerBg: "rgba(255, 255, 255, 0.98)",
+                },
+                Table: {
+                  cellPaddingBlock: 8,
+                  cellPaddingInline: 8,
+                },
               },
             }}
           >

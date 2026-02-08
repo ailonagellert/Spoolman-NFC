@@ -251,11 +251,11 @@ export const SpoolCreate: React.FC<IResourceComponentsProps & CreateOrCloneProps
           <div
             style={{ display: "flex", backgroundColor: "#141414", border: "1px solid #424242", borderRadius: "6px" }}
           >
-            <Button type="text" style={{ padding: 0, width: 32, height: 32 }} onClick={decrementQty}>
+            <Button type="text" style={{ padding: 0, width: 44, minWidth: 44, height: 44, minHeight: 44 }} onClick={decrementQty}>
               <MinusOutlined />
             </Button>
             <InputNumber name="Quantity" min={1} id="qty-input" controls={false} value={quantity}></InputNumber>
-            <Button type="text" style={{ padding: 0, width: 32, height: 32 }} onClick={incrementQty}>
+            <Button type="text" style={{ padding: 0, width: 44, minWidth: 44, height: 44, minHeight: 44 }} onClick={incrementQty}>
               <PlusOutlined />
             </Button>
           </div>

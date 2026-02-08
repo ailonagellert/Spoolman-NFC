@@ -55,7 +55,6 @@ export const SpoolmanLayout: React.FC<SpoolmanLayoutProps> = ({ children }) => (
     Header={() => <Header sticky />}
     Sider={() => (
       <ThemedSiderV2
-        fixed
         Title={({ collapsed }) => <ThemedTitleV2 collapsed={collapsed} text="Spoolman" icon={<Logo />} />}
       />
     )}

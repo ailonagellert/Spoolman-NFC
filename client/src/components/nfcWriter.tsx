@@ -290,21 +290,31 @@ export const showNFCWriteModal = (spool: ISpool, t: (key: string) => string): vo
   // Always show manual NFC Tools instructions since Web NFC has compatibility issues
   Modal.warning({
     title: "Write NFC Tag with NFC Tools",
+    width: "90%",
+    style: { maxWidth: 700, top: 20 },
+    bodyStyle: { 
+      maxHeight: "calc(100vh - 200px)", 
+      overflowY: "auto",
+      padding: "16px 24px"
+    },
     content: (
-      <div>
-        <p style={{ marginBottom: 12 }}>Use the <strong>NFC Tools</strong> app to write this OpenSpool data to your tag:</p>
+      <div style={{ fontSize: 16 }}>
+        <p style={{ marginBottom: 16, lineHeight: 1.6 }}>Use the <strong>NFC Tools</strong> app to write this OpenSpool data to your tag:</p>
         
-        <h4>Step 1: Install NFC Tools</h4>
-        <p>Download from Google Play Store: <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc" target="_blank" rel="noopener noreferrer">NFC Tools</a></p>
+        <h4 style={{ fontSize: 18, marginTop: 24, marginBottom: 12 }}>Step 1: Install NFC Tools</h4>
+        <p style={{ marginBottom: 16 }}>Download from <a href="https://play.google.com/store/apps/details?id=com.wakdev.wdnfc" target="_blank" rel="noopener noreferrer">Google Play Store: NFC Tools</a></p>
         
-        <h4>Step 2: Copy this OpenSpool JSON:</h4>
+        <h4 style={{ fontSize: 18, marginTop: 24, marginBottom: 12 }}>Step 2: Copy this OpenSpool JSON:</h4>
         <pre style={{ 
           backgroundColor: "#f5f5f5", 
-          padding: 12, 
-          borderRadius: 4, 
-          fontSize: 11,
+          padding: 16,
+          borderRadius: 8,
+          fontSize: 13,
           maxHeight: 200,
-          overflow: "auto"
+          overflow: "auto",
+          wordBreak: "break-all",
+          whiteSpace: "pre-wrap",
+          WebkitOverflowScrolling: "touch"
         }}>
           {openSpoolJSON}
         </pre>
@@ -314,38 +324,43 @@ export const showNFCWriteModal = (spool: ISpool, t: (key: string) => string): vo
             message.success("Copied to clipboard!");
           }}
           style={{ 
+            width: "100%",
+            marginTop: 12,
             marginBottom: 16,
-            padding: "8px 16px",
+            padding: "12px 24px",
+            minHeight: 44,
             backgroundColor: "#1890ff",
             color: "white",
             border: "none",
-            borderRadius: 4,
-            cursor: "pointer"
+            borderRadius: 8,
+            cursor: "pointer",
+            fontSize: 16,
+            fontWeight: 600,
+            boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
           }}
         >
           Copy JSON to Clipboard
         </button>
         
-        <h4>Step 3: In NFC Tools app:</h4>
-        <ol style={{ fontSize: 14 }}>
-          <li>Tap <strong>"Write"</strong> tab</li>
-          <li>Tap <strong>"Add a record"</strong></li>
-          <li>Select <strong>"Data" → "Text"</strong></li>
-          <li>Paste the JSON data</li>
-          <li>Optionally add more records:
-            <ul>
-              <li><strong>URL:</strong> <code>{`${window.location.origin}/spool/show/${spool.id}`}</code></li>
+        <h4 style={{ fontSize: 18, marginTop: 24, marginBottom: 12 }}>Step 3: In NFC Tools app:</h4>
+        <ol style={{ fontSize: 16, lineHeight: 1.8, paddingLeft: 24 }}>
+          <li style={{ marginBottom: 12 }}>Tap <strong>"Write"</strong> tab</li>
+          <li style={{ marginBottom: 12 }}>Tap <strong>"Add a record"</strong></li>
+          <li style={{ marginBottom: 12 }}>Select <strong>"Data" → "Text"</strong></li>
+          <li style={{ marginBottom: 12 }}>Paste the JSON data</li>
+          <li style={{ marginBottom: 12 }}>Optionally add more records:
+            <ul style={{ marginTop: 8, lineHeight: 1.6 }}>
+              <li style={{ marginBottom: 8 }}><strong>URL:</strong> <code style={{ fontSize: 13, wordBreak: "break-all", backgroundColor: "#f0f0f0", padding: "2px 6px", borderRadius: 4 }}>{`${window.location.origin}/spool/show/${spool.id}`}</code></li>
               <li><strong>Text:</strong> Spoolman Spool ID: {spool.id}</li>
             </ul>
           </li>
-          <li>Tap <strong>"Write"</strong> and hold your tag near the phone</li>
+          <li style={{ marginBottom: 12 }}>Tap <strong>"Write"</strong> and hold your tag near the phone</li>
         </ol>
         
-        <p style={{ marginTop: 16, fontSize: 12, color: "#666" }}>
+        <p style={{ marginTop: 24, fontSize: 14, color: "#666", lineHeight: 1.6, padding: 12, backgroundColor: "#f9f9f9", borderRadius: 8, borderLeft: "4px solid #1890ff" }}>
           <strong>Note:</strong> This creates an OpenSpool-compatible tag that works with Filaman and other OpenSpool readers.
         </p>
       </div>
     ),
-    width: 700,
   });
 };

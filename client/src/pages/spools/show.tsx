@@ -70,6 +70,8 @@ export const SpoolShow: React.FC<IResourceComponentsProps> = () => {
         okText: t("buttons.archive"),
         okType: "primary",
         cancelText: t("buttons.cancel"),
+        width: "90%",
+        style: { maxWidth: 500 },
         onOk() {
           return archiveSpool(spool, true);
         },
@@ -151,11 +153,15 @@ export const SpoolShow: React.FC<IResourceComponentsProps> = () => {
                 Modal.success({
                   title: t("nfc.success", "NFC Tag Written Successfully"),
                   content: t("nfc.success_message", "The spool data has been written to the NFC tag."),
+                  width: "90%",
+                  style: { maxWidth: 500 },
                 });
               } catch (error: any) {
                 Modal.error({
                   title: t("nfc.error", "Failed to Write NFC Tag"),
                   content: error.message || "An unknown error occurred",
+                  width: "90%",
+                  style: { maxWidth: 500 },
                 });
               }
             }}

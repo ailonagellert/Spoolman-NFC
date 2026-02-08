@@ -1,0 +1,581 @@
+/* Mobile-first responsive utilities for Spoolman */
+
+/* Typography scaling - prevent font boosting on mobile */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px !important; /* Prevent zoom on iOS form inputs */
+    -webkit-text-size-adjust: 100%;
+  }
+  
+  h1, .ant-typography h1 { 
+    font-size: 24px !important; 
+  }
+  
+  h2, .ant-typography h2 { 
+    font-size: 20px !important; 
+  }
+  
+  h3, .ant-typography h3 { 
+    font-size: 18px !important; 
+  }
+  
+  h4, .ant-typography h4 { 
+    font-size: 16px !important; 
+  }
+  
+  h5, .ant-typography h5 { 
+    font-size: 14px !important; 
+  }
+}
+
+/* Reduce padding on mobile */
+@media (max-width: 768px) {
+  .ant-layout-content {
+    padding: 4px !important;
+  }
+  
+  .ant-card {
+    margin-bottom: 12px;
+  }
+  
+  .ant-card-body {
+    padding: 8px 4px;
+  }
+  
+  .ant-form-item {
+    margin-bottom: 12px;
+  }
+  
+  /* Stack form buttons vertically on mobile */
+  .ant-form-item-control-input-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .ant-form-item-control-input-content > .ant-btn {
+    width: 100%;
+  }
+  
+  /* Footer buttons in forms */
+  .ant-page-header-footer > button,
+  .ant-space-item > button {
+    min-width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+/* Table improvements for mobile */
+@media (max-width: 768px) {
+  .ant-table {
+    font-size: 14px;
+  }
+  
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
+    padding: 8px 4px !important;
+  }
+  
+  /* Make first column (ID) sticky on mobile for easier navigation */
+  .ant-table-cell:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: inherit;
+    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .ant-table-thead .ant-table-cell:first-child {
+    z-index: 3;
+  }
+  
+  /* Smaller pagination on mobile */
+  .ant-pagination {
+    font-size: 14px;
+  }
+  
+  .ant-pagination-item,
+  .ant-pagination-prev,
+  .ant-pagination-next {
+    min-width: 32px;
+    height: 32px;
+    line-height: 30px;
+  }
+  
+  /* Table wrapper with better scroll indicator */
+  .ant-table-wrapper {
+    position: relative;
+  }
+  
+  .ant-table-wrapper::after {
+    content: '→';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    font-size: 18px;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+}
+
+/* Touch-friendly dropdowns and selects */
+@media (max-width: 768px) {
+  .ant-dropdown-menu-item,
+  .ant-select-item {
+    min-height: 44px;
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+  
+  .ant-dropdown-menu {
+    min-width: 200px;
+  }
+  
+  .ant-select-dropdown {
+    font-size: 16px;
+  }
+}
+
+/* Better modals on mobile */
+@media (max-width: 768px) {
+  .ant-modal {
+    max-width: calc(100vw - 16px) !important;
+    margin: 8px auto !important;
+    top: 0 !important;
+  }
+  
+  .ant-modal-content {
+    border-radius: 8px;
+  }
+  
+  .ant-modal-header {
+    padding: 16px 16px 12px;
+  }
+  
+  .ant-modal-body {
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 12px 4px 8px;
+  }
+  
+  .ant-modal-footer {
+    padding: 8px 4px 12px;
+  }
+  
+  .ant-modal-footer .ant-btn {
+    min-height: 44px;
+    font-size: 16px;
+  }
+  
+  /* Stack modal buttons on very small screens */
+  .ant-modal-footer {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+  
+  .ant-modal-footer .ant-btn {
+    width: 100%;
+    margin: 0 !important;
+  }
+}
+
+/* Larger touch targets for buttons */
+@media (max-width: 768px) {
+  .ant-btn {
+    min-height: 44px;
+    padding: 8px 16px;
+    font-size: 16px;
+  }
+  
+  .ant-btn-sm {
+    min-height: 36px;
+    padding: 4px 12px;
+    font-size: 14px;
+  }
+  
+  .ant-btn-lg {
+    min-height: 48px;
+    padding: 10px 20px;
+    font-size: 18px;
+  }
+  
+  .ant-btn-icon-only {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Space items properly */
+  .ant-space-item {
+    display: flex;
+  }
+}
+
+/* Form inputs - touch friendly */
+@media (max-width: 768px) {
+  .ant-input,
+  .ant-input-number,
+  .ant-picker,
+  .ant-select-selector {
+    min-height: 44px;
+    font-size: 16px !important; /* Prevent zoom on iOS */
+  }
+  
+  .ant-input-number-input {
+    height: 42px;
+    font-size: 16px !important;
+  }
+  
+  textarea.ant-input {
+    font-size: 16px !important;
+  }
+}
+
+/* Header improvements for mobile */
+@media (max-width: 768px) {
+  .ant-layout-header {
+    padding: 0 12px !important;
+    height: auto !important;
+    min-height: 56px;
+    line-height: normal;
+  }
+  
+  .ant-layout-header .ant-space {
+    flex-wrap: wrap;
+    gap: 8px !important;
+  }
+  
+  .ant-layout-header .ant-btn {
+    padding: 6px 12px;
+    height: 36px;
+    min-height: 36px;
+  }
+}
+
+/* Sidebar improvements - hide when collapsed on mobile */
+@media (max-width: 992px) {
+  .ant-layout-sider-collapsed {
+    width: 0 !important;
+    min-width: 0 !important;
+    max-width: 0 !important;
+  }
+  
+  .ant-menu-inline-collapsed {
+    width: 0;
+  }
+}
+
+/* Footer improvements */
+@media (max-width: 768px) {
+  .ant-layout-footer {
+    display: none !important;
+  }
+}
+
+/* Footer show on larger tablets */
+@media (min-width: 769px) {
+  .ant-layout-footer {
+    padding: 16px 12px !important;
+  }
+  
+  .ant-layout-footer > div {
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+}
+
+/* List page header buttons */
+@media (max-width: 768px) {
+  .ant-page-header-heading-extra {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .ant-page-header-heading-extra > * {
+    flex: 1 1 auto;
+    min-width: fit-content;
+  }
+  
+  .ant-page-header {
+    padding: 8px 4px !important;
+  }
+}
+
+/* List content area */
+@media (max-width: 768px) {
+  .ant-list {
+    padding: 4px;
+  }
+  
+  .ant-row-space-between {
+    margin: -8px !important;
+  }
+  
+  .ant-col > .ant-btn {
+    margin: 8px;
+  }
+}
+
+/* Show page improvements */
+@media (max-width: 768px) {
+  .ant-descriptions-item-label,
+  .ant-descriptions-item-content {
+    padding: 8px 4px !important;
+  }
+  
+  /* Stack description items vertically on mobile */
+  .ant-descriptions-row {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Card actions - bigger touch targets */
+@media (max-width: 768px) {
+  .ant-card-actions > li {
+    margin: 8px 0;
+  }
+  
+  .ant-card-actions > li > span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    font-size: 20px;
+  }
+  
+  .ant-card-actions > li > span > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    padding: 12px;
+  }
+}
+
+/* QR Code and NFC specific improvements */
+@media (max-width: 768px) {
+  pre {
+    font-size: 12px !important;
+    padding: 12px !important;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    word-break: break-all;
+    white-space: pre-wrap;
+  }
+  
+  code {
+    word-break: break-all;
+    font-size: 13px;
+  }
+}
+
+/* Switch and checkbox - larger touch targets */
+@media (max-width: 768px) {
+  .ant-switch {
+    min-width: 44px;
+    height: 24px;
+  }
+  
+  .ant-checkbox-wrapper,
+  .ant-radio-wrapper {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .ant-checkbox-inner,
+  .ant-radio-inner {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Tabs - touch friendly */
+@media (max-width: 768px) {
+  .ant-tabs-tab {
+    padding: 12px 16px;
+    font-size: 16px;
+  }
+}
+
+/* Card mobile optimization */
+@media (max-width: 768px) {
+  .ant-card-body {
+    padding: 12px 4px !important;
+  }
+  
+  .ant-card-head {
+    padding: 12px 4px;
+  }
+}
+
+/* Table mobile optimization */
+@media (max-width: 768px) {
+  .ant-table-wrapper {
+    padding: 0 4px !important;
+  }
+  
+  .ant-table-cell {
+    padding: 6px 6px;
+  }
+}
+
+/* Dropdown mobile optimization */
+@media (max-width: 768px) {
+  .ant-dropdown-menu {
+    padding: 4px 8px;
+  }
+  
+  .ant-dropdown-menu-item {
+    padding: 8px 12px;
+  }
+}
+
+/* Show page improvements */
+@media (max-width: 768px) {
+  .ant-descriptions-item-label,
+  .ant-descriptions-item-content {
+    padding: 8px 4px !important;
+  }
+  
+  /* Stack description items vertically on mobile */
+  .ant-descriptions-row {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Show page content */
+  .ant-show-content {
+    padding: 8px 4px !important;
+  }
+  
+  /* Show page title sections */
+  .ant-typography h5 {
+    margin-top: 16px !important;
+    margin-bottom: 8px !important;
+  }
+}
+
+/* Quantity input specific (from create form) */
+@media (max-width: 768px) {
+  #qty-input {
+    min-height: 44px !important;
+    font-size: 18px !important;
+  }
+}
+
+/* Prevent horizontal scroll on body */
+body {
+  overflow-x: hidden;
+}
+
+/* Smooth scrolling for better UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Header buttons mobile optimization - keep text visible */
+@media (max-width: 768px) {
+  .ant-page-header-heading-extra {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px !important;
+  }
+  
+  /* Smaller buttons with icons and text on tablets */
+  .ant-page-header-heading-extra .ant-btn {
+    height: 36px !important;
+    padding: 4px 12px !important;
+    font-size: 12px !important;
+  }
+  
+  .ant-page-header-heading-extra .ant-btn .anticon {
+    font-size: 16px !important;
+  }
+  
+  /* Hide "Show Archived" dropdown button for column selection */
+  .ant-page-header-heading-extra .ant-dropdown-trigger {
+    display: none !important;
+  }
+  
+  /* Hide Edit button (Hide Columns) - look for button with edit icon */
+  .ant-page-header-heading-extra button:has(.anticon-edit) {
+    display: none !important;
+  }
+  
+  /* Hide Archive/Unarchive buttons - buttons with inbox or to-top icons */
+  .ant-page-header-heading-extra button:has(.anticon-inbox),
+  .ant-page-header-heading-extra button:has(.anticon-to-top) {
+    display: none !important;
+  }
+}
+
+/* Compact icon buttons on phones - keep icons visible */
+@media (max-width: 576px) {
+  .ant-page-header-heading-extra .ant-btn {
+    height: 40px !important;
+    padding: 4px 8px !important;
+    font-size: 11px !important;
+    white-space: nowrap;
+  }
+  
+  .ant-page-header-heading-extra .ant-btn .anticon {
+    font-size: 18px !important;
+    margin-right: 4px !important;
+  }
+}
+
+/* Date picker mobile optimization */
+@media (max-width: 768px) {
+  /* Hide time selector */
+  .ant-picker-time-panel,
+  .ant-picker-timepicker-column {
+    display: none !important;
+  }
+  
+  /* Dark mode support - adapt to current theme */
+  .ant-picker-panel {
+    background: var(--ant-color-bg-elevated) !important;
+  }
+  
+  .ant-picker-calendar-header {
+    background: var(--ant-color-bg-container) !important;
+    padding: 12px 8px !important;
+  }
+  
+  .ant-picker-cell {
+    padding: 6px 4px !important;
+  }
+  
+  .ant-picker-cell-inner {
+    font-size: 14px;
+    padding: 4px 2px !important;
+    color: var(--ant-color-text) !important;
+  }
+  
+  /* Highlight selected dates */
+  .ant-picker-cell-selected .ant-picker-cell-inner {
+    background: #1890ff !important;
+    color: white !important;
+  }
+  
+  .ant-picker-cell-in-range .ant-picker-cell-inner {
+    background: rgba(24, 144, 255, 0.2) !important;
+  }
+}
+
+/* Better focus states for accessibility */
+@media (max-width: 768px) {
+  *:focus-visible {
+    outline: 2px solid #1890ff;
+    outline-offset: 2px;
+  }
+}

@@ -1,10 +1,10 @@
 import { EditOutlined, EyeOutlined, FilterOutlined, PlusSquareOutlined } from "@ant-design/icons";
 import { List, useTable } from "@refinedev/antd";
 import { IResourceComponentsProps, useInvalidate, useNavigation, useTranslate } from "@refinedev/core";
-import { Button, Dropdown, Table } from "antd";
+import { Button, Dropdown, Spin, Table } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import {
     ActionsColumn,
@@ -67,6 +67,12 @@ export const VendorList: React.FC<IResourceComponentsProps> = () => {
 
   // Create state for the columns to show
   const [showColumns, setShowColumns] = useState<string[]>(initialState.showColumns ?? allColumns);
+  
+  // Infinite scroll state
+  const [allData, setAllData] = useState<IVendor[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   // Store state in local storage
   const tableState: TableState = {
@@ -81,14 +87,65 @@ export const VendorList: React.FC<IResourceComponentsProps> = () => {
   const queryDataSource: IVendor[] = useMemo(() => {
     return (tableProps.dataSource || []).map((record) => ({ ...record }));
   }, [tableProps.dataSource]);
-  const dataSource = useLiveify(
+  const liveDataSource = useLiveify(
     "vendor",
     queryDataSource,
     useCallback((record: IVendor) => record, [])
   );
+  
+  // Accumulate data for infinite scroll
+  useEffect(() => {
+    if (current === 1) {
+      // Reset to first page data
+      setAllData(liveDataSource);
+      setHasMore(true);
+    } else {
+      // Append new page data
+      setAllData(prev => {
+        const existingIds = new Set(prev.map(item => item.id));
+        const newItems = liveDataSource.filter(item => !existingIds.has(item.id));
+        return [...prev, ...newItems];
+      });
+    }
+    setIsLoadingMore(false);
+    
+    // Check if we have more data
+    if (tableProps.pagination && typeof tableProps.pagination.total === 'number') {
+      setHasMore(allData.length + liveDataSource.length < tableProps.pagination.total);
+    }
+  }, [liveDataSource, current]);
+  
+  // Infinite scroll handler
+  useEffect(() => {
+    const container = tableContainerRef.current?.querySelector('.ant-table-body');
+    if (!container) return;
+    
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
+      
+      // Load more when scrolled 80% down
+      if (scrollPercentage > 0.8 && !isLoadingMore && hasMore) {
+        setIsLoadingMore(true);
+        setCurrent(current + 1);
+      }
+    };
+    
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [isLoadingMore, hasMore, current]);
+  
+  // Reset accumulated data when filters or sorters change
+  useEffect(() => {
+    setAllData([]);
+    setCurrent(1);
+  }, [filters, sorters]);
+  
+  const dataSource = allData;
 
+  // Hide pagination controls for infinite scroll
   if (tableProps.pagination) {
-    tableProps.pagination.showSizeChanger = true;
+    tableProps.pagination = false;
   }
 
   const { editUrl, showUrl, cloneUrl } = useNavigation();
@@ -158,19 +215,20 @@ export const VendorList: React.FC<IResourceComponentsProps> = () => {
         </>
       )}
     >
-      <Table
-        {...tableProps}
-        sticky
-        tableLayout="auto"
-        scroll={{ x: "max-content" }}
-        dataSource={dataSource}
-        rowKey="id"
-        columns={removeUndefined([
+      <div ref={tableContainerRef}>
+        <Table
+          {...tableProps}
+          sticky
+          tableLayout="auto"
+          scroll={{ x: "max-content", y: "calc(100vh - 300px)" }}
+          dataSource={dataSource}
+          rowKey="id"
+          columns={removeUndefined([
           SortedColumn({
             ...commonProps,
             id: "id",
             i18ncat: "vendor",
-            width: 70,
+            width: 50,
           }),
           SortedColumn({
             ...commonProps,
@@ -182,6 +240,7 @@ export const VendorList: React.FC<IResourceComponentsProps> = () => {
             id: "registered",
             i18ncat: "vendor",
             width: 200,
+            responsive: ["lg"],
           }),
           NumberColumn({
             ...commonProps,
@@ -190,6 +249,7 @@ export const VendorList: React.FC<IResourceComponentsProps> = () => {
             unit: "g",
             maxDecimals: 0,
             width: 200,
+            responsive: ["md"],
           }),
           ...(extraFields.data?.map((field) => {
             return CustomFieldColumn({
@@ -201,10 +261,17 @@ export const VendorList: React.FC<IResourceComponentsProps> = () => {
             ...commonProps,
             id: "comment",
             i18ncat: "vendor",
+            responsive: ["lg"],
           }),
           ActionsColumn<IVendor>(t("table.actions"), actions),
         ])}
       />
+      {isLoadingMore && (
+        <div style={{ textAlign: 'center', padding: '16px' }}>
+          <Spin tip={t("loading", "Loading more...")} />
+        </div>
+      )}
+      </div>
     </List>
   );
 };

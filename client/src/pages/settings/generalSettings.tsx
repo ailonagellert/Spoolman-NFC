@@ -51,8 +51,8 @@ export function GeneralSettings() {
     <>
       <Form
         form={form}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
+        labelCol={{ xs: { span: 24 }, sm: { span: 8 } }}
+        wrapperCol={{ xs: { span: 24 }, sm: { span: 16 } }}
         initialValues={{
           currency: settings.data?.currency.value,
           round_prices: settings.data?.round_prices.value,
@@ -62,6 +62,7 @@ export function GeneralSettings() {
         style={{
           maxWidth: "600px",
           margin: "0 auto",
+          padding: "16px",
         }}
       >
         <Form.Item
@@ -104,7 +105,7 @@ export function GeneralSettings() {
           <Checkbox />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item wrapperCol={{ xs: { span: 24 }, sm: { offset: 8, span: 16 } }}>
           <Button type="primary" htmlType="submit" loading={settings.isFetching || setCurrency.isLoading}>
             {t("buttons.save")}
           </Button>

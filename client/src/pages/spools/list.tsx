@@ -11,10 +11,10 @@ import {
 } from "@ant-design/icons";
 import { List, useTable } from "@refinedev/antd";
 import { IResourceComponentsProps, useInvalidate, useNavigation, useTranslate } from "@refinedev/core";
-import { Button, Dropdown, Modal, Table } from "antd";
+import { Button, Dropdown, Modal, Spin, Table } from "antd";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import {
     Action,
@@ -162,6 +162,12 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
 
   // Create state for the columns to show
   const [showColumns, setShowColumns] = useState<string[]>(initialState.showColumns ?? defaultColumns);
+  
+  // Infinite scroll state
+  const [allData, setAllData] = useState<ISpoolCollapsed[]>([]);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const tableContainerRef = useRef<HTMLDivElement>(null);
 
   // Store state in local storage
   const tableState: TableState = {
@@ -177,7 +183,57 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
     () => (tableProps.dataSource || []).map((record) => ({ ...record })),
     [tableProps.dataSource]
   );
-  const dataSource = useLiveify("spool", queryDataSource, collapseSpool);
+  const liveDataSource = useLiveify("spool", queryDataSource, collapseSpool);
+  
+  // Accumulate data for infinite scroll
+  useEffect(() => {
+    if (current === 1) {
+      // Reset to first page data
+      setAllData(liveDataSource);
+      setHasMore(true);
+    } else {
+      // Append new page data
+      setAllData(prev => {
+        const existingIds = new Set(prev.map(item => item.id));
+        const newItems = liveDataSource.filter(item => !existingIds.has(item.id));
+        return [...prev, ...newItems];
+      });
+    }
+    setIsLoadingMore(false);
+    
+    // Check if we have more data
+    if (tableProps.pagination && typeof tableProps.pagination.total === 'number') {
+      setHasMore(allData.length + liveDataSource.length < tableProps.pagination.total);
+    }
+  }, [liveDataSource, current]);
+  
+  // Infinite scroll handler
+  useEffect(() => {
+    const container = tableContainerRef.current?.querySelector('.ant-table-body');
+    if (!container) return;
+    
+    const handleScroll = () => {
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
+      
+      // Load more when scrolled 80% down
+      if (scrollPercentage > 0.8 && !isLoadingMore && hasMore) {
+        setIsLoadingMore(true);
+        setCurrent(current + 1);
+      }
+    };
+    
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [isLoadingMore, hasMore, current]);
+  
+  // Reset accumulated data when filters or sorters change
+  useEffect(() => {
+    setAllData([]);
+    setCurrent(1);
+  }, [filters, sorters, showArchived]);
+  
+  const dataSource = allData;
 
   // Function for opening an ant design modal that asks for confirmation for archiving a spool
   const archiveSpool = async (spool: ISpoolCollapsed, archive: boolean) => {
@@ -200,6 +256,8 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
         okText: t("buttons.archive"),
         okType: "primary",
         cancelText: t("buttons.cancel"),
+        width: "90%",
+        style: { maxWidth: 500 },
         onOk() {
           return archiveSpool(spool, true);
         },
@@ -207,8 +265,9 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
     }
   };
 
+  // Hide pagination controls for infinite scroll
   if (tableProps.pagination) {
-    tableProps.pagination.showSizeChanger = true;
+    tableProps.pagination = false;
   }
 
   const { editUrl, showUrl, cloneUrl } = useNavigation();
@@ -233,11 +292,15 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
               Modal.success({
                 title: t("nfc.success", "NFC Tag Written Successfully"),
                 content: t("nfc.success_message", "The spool data has been written to the NFC tag."),
+                width: "90%",
+                style: { maxWidth: 500 },
               });
             } catch (error: any) {
               Modal.error({
                 title: t("nfc.error", "Failed to Write NFC Tag"),
                 content: error.message || "An unknown error occurred",
+                width: "90%",
+                style: { maxWidth: 500 },
               });
             }
           }
@@ -351,13 +414,14 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
       )}
     >
       {spoolAdjustModal}
-      <Table
-        {...tableProps}
-        sticky
-        tableLayout="auto"
-        scroll={{ x: "max-content" }}
-        dataSource={dataSource}
-        rowKey="id"
+      <div ref={tableContainerRef}>
+        <Table
+          {...tableProps}
+          sticky
+          tableLayout="auto"
+          scroll={{ x: "max-content", y: "calc(100vh - 300px)" }}
+          dataSource={dataSource}
+          rowKey="id"
         // Make archived rows greyed out
         onRow={(record) => {
           if (record.archived) {
@@ -376,7 +440,7 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             ...commonProps,
             id: "id",
             i18ncat: "spool",
-            width: 70,
+            width: 50,
           }),
           SpoolIconColumn({
             ...commonProps,
@@ -398,6 +462,7 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             i18nkey: "spool.fields.material",
             filterValueQuery: useSpoolmanMaterials(),
             width: 120,
+            responsive: ["sm"],
           }),
           SortedColumn({
             ...commonProps,
@@ -405,6 +470,7 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             i18ncat: "spool",
             align: "right",
             width: 80,
+            responsive: ["md"],
             render: (_, obj: ISpoolCollapsed) => {
               if (obj.price === undefined) {
                 return "";
@@ -420,6 +486,7 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             unit: "g",
             maxDecimals: 0,
             width: 110,
+            responsive: ["md"],
           }),
           NumberColumn({
             ...commonProps,
@@ -429,6 +496,7 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             maxDecimals: 0,
             defaultText: t("unknown"),
             width: 110,
+            responsive: ["md"],
           }),
           NumberColumn({
             ...commonProps,
@@ -437,6 +505,7 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             unit: "mm",
             maxDecimals: 0,
             width: 120,
+            responsive: ["lg"],
           }),
           NumberColumn({
             ...commonProps,
@@ -446,6 +515,7 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             maxDecimals: 0,
             defaultText: t("unknown"),
             width: 120,
+            responsive: ["lg"],
           }),
           FilteredQueryColumn({
             ...commonProps,
@@ -453,6 +523,7 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             i18ncat: "spool",
             filterValueQuery: useSpoolmanLocations(),
             width: 120,
+            responsive: ["md"],
           }),
           FilteredQueryColumn({
             ...commonProps,
@@ -460,21 +531,25 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             i18ncat: "spool",
             filterValueQuery: useSpoolmanLotNumbers(),
             width: 120,
+            responsive: ["md"],
           }),
           DateColumn({
             ...commonProps,
             id: "first_used",
             i18ncat: "spool",
+            responsive: ["lg"],
           }),
           DateColumn({
             ...commonProps,
             id: "last_used",
             i18ncat: "spool",
+            responsive: ["lg"],
           }),
           DateColumn({
             ...commonProps,
             id: "registered",
             i18ncat: "spool",
+            responsive: ["lg"],
           }),
           ...(extraFields.data?.map((field) => {
             return CustomFieldColumn({
@@ -487,10 +562,17 @@ export const SpoolList: React.FC<IResourceComponentsProps> = () => {
             id: "comment",
             i18ncat: "spool",
             width: 150,
+            responsive: ["lg"],
           }),
           ActionsColumn(t("table.actions"), actions),
         ])}
-      />
+        />
+        {isLoadingMore && (
+          <div style={{ textAlign: 'center', padding: '16px' }}>
+            <Spin tip={t("loading", "Loading more...")} />
+          </div>
+        )}
+      </div>
     </List>
   );
 };
